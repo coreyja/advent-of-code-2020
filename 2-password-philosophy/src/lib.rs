@@ -32,4 +32,9 @@ mod tests {
     fn it_works_for_the_sample_input() {
         assert_eq!(count_valid_passwords(include_str!("sample.input")), 2);
     }
+
+    #[test]
+    fn it_works_for_my_input() {
+        assert_eq!(count_valid_passwords(include_str!("my.input")), 477);
+    }
 }
