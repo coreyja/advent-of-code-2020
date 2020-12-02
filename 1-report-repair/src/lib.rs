@@ -14,29 +14,33 @@ fn parse_input(input: &str) -> Vec<i32> {
 }
 
 fn find_next(input: Vec<i32>, target: i32, count: i32) -> Option<i32> {
+    // This is out recursion base case. Once we are down to count == 1
+    // we are done recursing and can just look for something that matches
+    // the target
+    // With count == 1 the product is just equal to the number (as if we multiplied by 1)
     if count == 1 {
-        let mut filtered = input.into_iter().filter(|&x| x == target);
-        return filtered.next();
+        return input.into_iter().find(|&x| x == target);
     }
 
-    if let Some((y, curr)) = input
+    input
         .clone()
         .into_iter()
         .filter_map(|x| {
+            // We map over the input and create a sub-problem for recursion
+            // Our new target is made by subtracting the current from the previous target. This is
+            // the inverse of adding up to a target, and allows us to pass less things down the
+            // recursion
+            // We also reduce the count (the number of recursions possible)
             let next = find_next(input.clone(), target - x, count - 1);
 
+            // If we found a result we need to return the ans to the subproblem * the current value
             if let Some(ans) = next {
-                Some((x, ans))
+                Some(x * ans)
             } else {
                 None
             }
         })
         .next()
-    {
-        Some(y * curr)
-    } else {
-        None
-    }
 }
 
 #[cfg(test)]
