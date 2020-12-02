@@ -14,10 +14,9 @@ fn parse_input(input: &str) -> Vec<i32> {
 }
 
 fn find_next(input: Vec<i32>, target: i32, count: i32) -> Option<i32> {
-    // This is out recursion base case. Once we are down to count == 1
-    // we are done recursing and can just look for something that matches
-    // the target
-    // With count == 1 the product is just equal to the number (as if we multiplied by 1)
+    // This is out recursion base case. Once we are down to count == 1 we are only look for a
+    // single number 'set' so its now an equality check with the target
+    // With count == 1 the product is also just equal to the number (as if we multiplied by 1)
     if count == 1 {
         return input.into_iter().find(|&x| x == target);
     }
