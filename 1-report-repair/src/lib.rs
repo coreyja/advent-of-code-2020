@@ -1,25 +1,9 @@
 pub fn find_pair(input: &str) -> i32 {
     find_next(parse_input(input), 2020, 2).unwrap()
-    // let ans = nums
-    //     .iter()
-    //     .find(|x| {
-    //         let target = 2020 - *x;
-
-    //         if nums.contains(&target) {
-    //             true
-    //         } else {
-    //             false
-    //         }
-    //     })
-    //     .unwrap();
-
-    // let other_num = 2020 - ans;
-
-    // ans * other_num
 }
 
 pub fn find_triplet(input: &str) -> i32 {
-    find_next(parse_input(input), 2020, 4).unwrap()
+    find_next(parse_input(input), 2020, 3).unwrap()
 }
 
 fn parse_input(input: &str) -> Vec<i32> {
