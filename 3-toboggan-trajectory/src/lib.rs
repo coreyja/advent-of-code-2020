@@ -1,4 +1,4 @@
-pub fn count_trees(input: &str, route: (usize, usize)) -> u32 {
+pub fn count_trees(input: &str, route: (usize, usize)) -> u64 {
     let lines: Vec<_> = input.trim().split("\n").collect();
     let row_length = lines.get(0).unwrap().chars().count();
     let column_length = lines.len();
@@ -19,7 +19,7 @@ pub fn count_trees(input: &str, route: (usize, usize)) -> u32 {
     count
 }
 
-pub fn check_multiple_paths(input: &str, routes: Vec<(usize, usize)>) -> u32 {
+pub fn check_multiple_paths(input: &str, routes: Vec<(usize, usize)>) -> u64 {
     routes
         .into_iter()
         .map(|x| count_trees(input, x))
@@ -48,6 +48,17 @@ mod tests {
                 vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
             ),
             336
+        );
+    }
+
+    #[test]
+    fn part_b_works_for_my_input() {
+        assert_eq!(
+            check_multiple_paths(
+                include_str!("my.input"),
+                vec![(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
+            ),
+            5813773056
         );
     }
 }
