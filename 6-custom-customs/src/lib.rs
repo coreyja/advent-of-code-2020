@@ -1,23 +1,10 @@
 use std::collections::HashSet;
 
 fn count_number_of_any_yes_questions(group: &str) -> usize {
-    let mut yes_questions = HashSet::new();
-
     let all_answers = group.to_owned().replace('\n', "");
-    all_answers.chars().for_each(|l| {
-        println!("");
-        yes_questions.insert(l);
-    });
 
-    yes_questions.len()
-}
-
-pub fn sum_any_yes_questions(input: &str) -> usize {
-    input
-        .trim()
-        .split("\n\n")
-        .map(|x| count_number_of_any_yes_questions(x))
-        .sum()
+    let set: HashSet<char> = all_answers.chars().collect();
+    set.len()
 }
 
 fn count_number_of_all_yes_questions(group: &str) -> usize {
@@ -35,12 +22,16 @@ fn count_number_of_all_yes_questions(group: &str) -> usize {
     }
 }
 
+fn sum_groups(input: &str, f: &dyn Fn(&str) -> usize) -> usize {
+    input.trim().split("\n\n").map(f).sum()
+}
+
 pub fn sum_all_yes_questions(input: &str) -> usize {
-    input
-        .trim()
-        .split("\n\n")
-        .map(|x| count_number_of_all_yes_questions(x))
-        .sum()
+    sum_groups(input, &count_number_of_all_yes_questions)
+}
+
+pub fn sum_any_yes_questions(input: &str) -> usize {
+    sum_groups(input, &count_number_of_any_yes_questions)
 }
 
 #[cfg(test)]
