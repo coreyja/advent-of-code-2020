@@ -35,13 +35,14 @@ fn missing_ids(input: &str, max: u32) -> Vec<u32> {
 }
 
 pub fn find_my_id(input: &str) -> Option<u32> {
-    let missing = missing_ids(input, 1023);
+    let mut missing = missing_ids(input, 1023).into_iter();
+    let mut max = missing.next().unwrap().clone();
 
-    missing
-        .iter()
-        .filter(|&&x| x > 0 && !missing.contains(&(x - 1)) && !missing.contains(&(x + 1)))
-        .next()
-        .cloned()
+    missing.find(|&x| {
+        let b = max + 1 == x;
+        max = max + 1;
+        !b
+    })
 }
 
 #[cfg(test)]
