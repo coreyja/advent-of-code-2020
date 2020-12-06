@@ -2,6 +2,7 @@ type Passport<'a> = std::collections::HashMap<&'a str, &'a str>;
 
 pub fn count_valid_passports(input: &str, required_keys: &Vec<&str>) -> usize {
     input
+        .trim()
         .split("\n\n")
         .map(|x| parse_passport(x))
         .filter(|x| valid_password(x, required_keys))
@@ -39,6 +40,17 @@ mod tests {
                 &vec!["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
             ),
             2
+        );
+    }
+
+    #[test]
+    fn part_a_works_for_my_input() {
+        assert_eq!(
+            count_valid_passports(
+                include_str!("my.input"),
+                &vec!["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+            ),
+            222
         );
     }
 }
