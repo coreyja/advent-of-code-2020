@@ -14,6 +14,7 @@ fn count_number_of_yes_questions(group: &str) -> usize {
 
 pub fn sum_question(input: &str) -> usize {
     input
+        .trim()
         .split("\n\n")
         .map(|x| count_number_of_yes_questions(x))
         .sum()
@@ -39,5 +40,10 @@ ac"
     #[test]
     fn part_a_works_for_sample_input() {
         assert_eq!(sum_question(include_str!("sample.input")), 11)
+    }
+
+    #[test]
+    fn part_a_works_for_my_input() {
+        assert_eq!(sum_question(include_str!("my.input")), 6735)
     }
 }
