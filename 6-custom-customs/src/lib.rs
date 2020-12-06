@@ -8,12 +8,13 @@ fn count_number_of_any_yes_questions(group: &str) -> usize {
 }
 
 fn count_number_of_all_yes_questions(group: &str) -> usize {
-    if group.lines().count() > 0 {
-        let yes_questions: HashSet<char> = (b'a'..=b'z').map(char::from).collect();
+    let mut lines = group.lines();
 
-        group
-            .lines()
-            .fold(yes_questions, |acc, x| {
+    if let Some(first_line) = lines.next() {
+        let starting: HashSet<char> = first_line.chars().collect();
+
+        lines
+            .fold(starting, |acc, x| {
                 acc.intersection(&x.chars().collect()).cloned().collect()
             })
             .len()
