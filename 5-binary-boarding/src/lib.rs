@@ -46,4 +46,9 @@ mod tests {
     fn finds_the_max_in_the_sample() {
         assert_eq!(find_max_boarding_pass(include_str!("sample.input")), 820);
     }
+
+    #[test]
+    fn finds_the_max_in_my_input() {
+        assert_eq!(find_max_boarding_pass(include_str!("my.input")), 835);
+    }
 }
