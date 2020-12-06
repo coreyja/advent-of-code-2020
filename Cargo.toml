@@ -5,4 +5,5 @@ members = [
     "2-password-philosophy",
     "3-toboggan-trajectory",
     "4-passport-processing",
+    "5-binary-boarding",
 ]
