@@ -6,4 +6,5 @@ members = [
     "3-toboggan-trajectory",
     "4-passport-processing",
     "5-binary-boarding",
+    "6-custom-customs",
 ]
