@@ -1,3 +1,5 @@
+use eyre::{eyre, Result};
+use regex::Regex;
 use std::str::FromStr;
 
 struct Passport {
@@ -33,31 +35,101 @@ impl Passport {
     }
 
     fn byr_valid(&self) -> bool {
-        true
+        if let Some(v) = &self.byr {
+            let parsed: Result<u32, _> = v.parse();
+
+            parsed.ok().filter(|&x| x >= 1920 && x <= 2002).is_some()
+        } else {
+            false
+        }
     }
 
     fn iyr_valid(&self) -> bool {
-        true
+        if let Some(v) = &self.iyr {
+            let parsed: Result<u32, _> = v.parse();
+
+            parsed.ok().filter(|&x| x >= 2010 && x <= 2020).is_some()
+        } else {
+            false
+        }
     }
 
     fn eyr_valid(&self) -> bool {
-        true
+        if let Some(v) = &self.eyr {
+            let parsed: Result<u32, _> = v.parse();
+
+            parsed.ok().filter(|&x| x >= 2020 && x <= 2030).is_some()
+        } else {
+            false
+        }
+    }
+
+    fn errorable_in_hgt_valid(&self) -> Result<bool> {
+        let hgt = self.hgt.as_ref().ok_or_else(|| eyre!("No HGT"))?;
+        let in_regex = Regex::new(r"^(\d*)in$").expect("regex is valid");
+
+        let in_match = in_regex
+            .captures(hgt)
+            .ok_or_else(|| eyre!("No match"))?
+            .get(1)
+            .ok_or_else(|| eyre!("No match"))?
+            .as_str();
+
+        let inches: u32 = in_match.parse()?;
+
+        Ok(inches >= 59 && inches <= 76)
+    }
+
+    fn errorable_cm_hgt_valid(&self) -> Result<bool> {
+        let hgt = self.hgt.as_ref().ok_or_else(|| eyre!("No HGT"))?;
+        let regex = Regex::new(r"^(\d*)cm$").expect("regex is valid");
+
+        let m = regex
+            .captures(hgt)
+            .ok_or_else(|| eyre!("No match"))?
+            .get(1)
+            .ok_or_else(|| eyre!("No match"))?
+            .as_str();
+
+        let val: u32 = m.parse()?;
+
+        Ok(val >= 150 && val <= 193)
     }
 
     fn hgt_valid(&self) -> bool {
-        true
+        self.errorable_in_hgt_valid().ok().filter(|&x| x).is_some()
+            || self.errorable_cm_hgt_valid().ok().filter(|&x| x).is_some()
     }
 
     fn hcl_valid(&self) -> bool {
-        true
+        self.hcl
+            .as_ref()
+            .filter(|x| {
+                let regex = Regex::new(r"^#[\da-z]{6}").expect("regex is valid");
+
+                regex.is_match(x)
+            })
+            .is_some()
     }
 
     fn ecl_valid(&self) -> bool {
-        true
+        let valid_ecls: Vec<&str> = vec!["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
+
+        self.ecl
+            .as_ref()
+            .filter(|&ecl| valid_ecls.contains(&ecl.as_ref()))
+            .is_some()
     }
 
     fn pid_valid(&self) -> bool {
-        true
+        self.pid
+            .as_ref()
+            .filter(|x| {
+                let regex = Regex::new(r"^\d{9}").expect("regex is valid");
+
+                regex.is_match(x)
+            })
+            .is_some()
     }
 }
 
@@ -102,9 +174,18 @@ pub fn count_passports_with_all_fields(input: &str) -> usize {
         .count()
 }
 
+pub fn count_valid_passports(input: &str) -> usize {
+    input
+        .trim()
+        .split("\n\n")
+        .map(|x| Passport::from_str(x).unwrap())
+        .filter(|x| x.valid())
+        .count()
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::count_passports_with_all_fields;
+    use crate::{count_passports_with_all_fields, count_valid_passports};
 
     #[test]
     fn part_a_works_for_sample_input() {
@@ -120,5 +201,10 @@ mod tests {
             count_passports_with_all_fields(include_str!("my.input"),),
             222
         );
+    }
+
+    #[test]
+    fn part_b_works_for_my_input() {
+        assert_eq!(count_valid_passports(include_str!("my.input"),), 1);
     }
 }
