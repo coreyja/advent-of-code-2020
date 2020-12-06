@@ -87,4 +87,9 @@ ac"
     fn part_b_works_for_sample_input() {
         assert_eq!(sum_all_yes_questions(include_str!("sample.input")), 6)
     }
+
+    #[test]
+    fn part_b_works_for_my_input() {
+        assert_eq!(sum_all_yes_questions(include_str!("my.input")), 3221)
+    }
 }
