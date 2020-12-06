@@ -125,7 +125,7 @@ impl Passport {
         self.pid
             .as_ref()
             .filter(|x| {
-                let regex = Regex::new(r"^\d{9}").expect("regex is valid");
+                let regex = Regex::new(r"^\d{9}$").expect("regex is valid");
 
                 regex.is_match(x)
             })
@@ -205,6 +205,6 @@ mod tests {
 
     #[test]
     fn part_b_works_for_my_input() {
-        assert_eq!(count_valid_passports(include_str!("my.input"),), 1);
+        assert_eq!(count_valid_passports(include_str!("my.input"),), 140);
     }
 }
