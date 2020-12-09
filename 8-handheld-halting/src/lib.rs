@@ -1,14 +1,26 @@
 use std::convert::TryFrom;
 
-enum Command {
+#[derive(Clone)]
+pub enum Command {
     Nop,
     Acc,
     Jump,
 }
 
-struct Instruction {
+#[derive(Clone)]
+pub struct Instruction {
     cmd: Command,
     arg: i64,
+}
+
+impl Instruction {
+    fn flip(&mut self) {
+        self.cmd = match &self.cmd {
+            Command::Nop => Command::Jump,
+            Command::Jump => Command::Nop,
+            x => x.clone(),
+        };
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -17,7 +29,7 @@ pub enum ExitStatus {
     Exited(i64),
 }
 
-fn parse_input(input: &str) -> Vec<Instruction> {
+fn compile(input: &str) -> Vec<Instruction> {
     input
         .trim()
         .lines()
@@ -39,21 +51,20 @@ fn parse_input(input: &str) -> Vec<Instruction> {
         .collect()
 }
 
-pub fn run(input: &str) -> ExitStatus {
+pub fn run(instructions: &Vec<Instruction>) -> ExitStatus {
     let mut current_acc = 0;
     let mut current_line_number: i64 = 0;
     let mut visited_line_numbers = vec![];
-
-    let instructions = parse_input(input);
 
     while !visited_line_numbers.contains(&current_line_number) {
         visited_line_numbers.push(current_line_number);
 
         let current_instruction = if let Ok(l) = usize::try_from(current_line_number) {
-            if l == input.len() {
+            if l == instructions.len() {
                 // We have reached the end of the program and are exiting gracefully
                 return ExitStatus::Exited(current_acc);
             }
+
             instructions
                 .get(l)
                 .expect("Code jumped to a non existant place")
@@ -74,6 +85,26 @@ pub fn run(input: &str) -> ExitStatus {
     ExitStatus::LoopDetected(current_acc)
 }
 
+pub fn find_flip(input: &str) -> Option<ExitStatus> {
+    let instructions = compile(input);
+
+    let maybe_flip_index = (0..instructions.len())
+        .map(|i| {
+            let mut new_instructions = instructions.to_owned();
+            new_instructions[i].flip();
+            (i, new_instructions)
+        })
+        .find(|(_, instructions)| match run(instructions) {
+            ExitStatus::Exited(_) => true,
+            _ => false,
+        });
+
+    let mut last_flip = instructions.to_owned();
+    last_flip[maybe_flip_index?.0].flip();
+
+    Some(run(&last_flip))
+}
+
 #[cfg(test)]
 mod tests {
     use crate::*;
@@ -81,7 +112,7 @@ mod tests {
     #[test]
     fn part_a_sample_works() {
         assert_eq!(
-            run(include_str!("sample.input")),
+            run(&compile(include_str!("sample.input"))),
             ExitStatus::LoopDetected(5)
         );
     }
@@ -89,8 +120,16 @@ mod tests {
     #[test]
     fn part_a_input_works() {
         assert_eq!(
-            run(include_str!("my.input")),
+            run(&compile(include_str!("my.input"))),
             ExitStatus::LoopDetected(1584)
+        );
+    }
+
+    #[test]
+    fn part_b_sample_works() {
+        assert_eq!(
+            find_flip(include_str!("sample.input")),
+            Some(ExitStatus::Exited(8))
         );
     }
 }
