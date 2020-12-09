@@ -72,4 +72,9 @@ mod tests {
     fn part_a_sample_works() {
         assert_eq!(run_until_loop(include_str!("sample.input")), 5);
     }
+
+    #[test]
+    fn part_a_input_works() {
+        assert_eq!(run_until_loop(include_str!("my.input")), 0);
+    }
 }
