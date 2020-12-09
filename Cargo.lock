@@ -26,6 +26,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "handheld-halting"
+version = "0.1.0"
+
+[[package]]
 name = "handy-haversacks"
 version = "0.1.0"
 dependencies = [
