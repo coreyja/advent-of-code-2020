@@ -143,4 +143,12 @@ mod tests {
             126
         );
     }
+
+    #[test]
+    fn part_b_my_input_works() {
+        assert_eq!(
+            count_inner_bags(include_str!("my.input"), "shiny gold"),
+            85324
+        );
+    }
 }
