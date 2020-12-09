@@ -2,7 +2,7 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-type ContainedBag = (u32, String);
+type ContainedBag = (usize, String);
 type ContainsMap = HashMap<String, Vec<ContainedBag>>;
 type ContainedByMap = HashMap<String, Vec<String>>;
 
@@ -20,11 +20,36 @@ pub fn count_outer_bags(input: &str, bag: &str) -> usize {
         if let Some(v) = map.get(&curr).cloned() {
             v.iter().for_each(|x| {
                 todo.push(x.to_owned());
-                visited_bags.insert(x.to_owned());
             });
         }
 
         visited_bags.insert(curr.to_owned());
+    }
+
+    // We don't want to include 'bag' but its here so we subtract one
+    visited_bags.len() - 1
+}
+
+pub fn count_inner_bags(input: &str, bag: &str) -> usize {
+    let map = parse_input(input);
+
+    let mut visited_bags = vec![];
+    let mut todo = vec![bag.to_owned()];
+
+    while todo.len() > 0 {
+        let curr = todo
+            .pop()
+            .expect("We check the length before we get in here");
+
+        if let Some(v) = map.get(&curr).cloned() {
+            v.iter().for_each(|(count, name)| {
+                std::iter::repeat(name)
+                    .take(*count)
+                    .for_each(|x| todo.push(x.to_owned()));
+            });
+        }
+
+        visited_bags.push(curr.to_owned());
     }
 
     // We don't want to include 'bag' but its here so we subtract one
@@ -78,7 +103,7 @@ fn build_map_for_line(map: &mut ContainsMap, line: &str) {
     let regex = Regex::new(r"(?P<num>\d+) (?P<name>.*) bags?")
         .expect("Regex literal for contained bags is valid");
 
-    let transformed_bags: Vec<(u32, String)> = contained_bags
+    let transformed_bags = contained_bags
         .map(|contained_bag_line| {
             let caps = regex.captures(contained_bag_line).unwrap();
             let bag_name = caps.name("name").unwrap().as_str().to_owned();
@@ -108,6 +133,14 @@ mod tests {
         assert_eq!(
             count_outer_bags(include_str!("my.input"), "shiny gold"),
             197
+        );
+    }
+
+    #[test]
+    fn part_b_new_sample_works() {
+        assert_eq!(
+            count_inner_bags(include_str!("new_sample.input"), "shiny gold"),
+            126
         );
     }
 }
