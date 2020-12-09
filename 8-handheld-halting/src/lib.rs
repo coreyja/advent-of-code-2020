@@ -132,4 +132,12 @@ mod tests {
             Some(ExitStatus::Exited(8))
         );
     }
+
+    #[test]
+    fn part_b_input_works() {
+        assert_eq!(
+            find_flip(include_str!("my.input")),
+            Some(ExitStatus::Exited(920))
+        );
+    }
 }
