@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 enum Command {
     Nop,
     Acc,
@@ -7,6 +9,12 @@ enum Command {
 struct Instruction {
     cmd: Command,
     arg: i64,
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ExitStatus {
+    LoopDetected(i64),
+    Exited(i64),
 }
 
 fn parse_input(input: &str) -> Vec<Instruction> {
@@ -31,9 +39,7 @@ fn parse_input(input: &str) -> Vec<Instruction> {
         .collect()
 }
 
-use std::convert::TryFrom;
-
-pub fn run_until_loop(input: &str) -> i64 {
+pub fn run(input: &str) -> ExitStatus {
     let mut current_acc = 0;
     let mut current_line_number: i64 = 0;
     let mut visited_line_numbers = vec![];
@@ -44,6 +50,10 @@ pub fn run_until_loop(input: &str) -> i64 {
         visited_line_numbers.push(current_line_number);
 
         let current_instruction = if let Ok(l) = usize::try_from(current_line_number) {
+            if l == input.len() {
+                // We have reached the end of the program and are exiting gracefully
+                return ExitStatus::Exited(current_acc);
+            }
             instructions
                 .get(l)
                 .expect("Code jumped to a non existant place")
@@ -61,7 +71,7 @@ pub fn run_until_loop(input: &str) -> i64 {
         }
     }
 
-    current_acc
+    ExitStatus::LoopDetected(current_acc)
 }
 
 #[cfg(test)]
@@ -70,11 +80,17 @@ mod tests {
 
     #[test]
     fn part_a_sample_works() {
-        assert_eq!(run_until_loop(include_str!("sample.input")), 5);
+        assert_eq!(
+            run(include_str!("sample.input")),
+            ExitStatus::LoopDetected(5)
+        );
     }
 
     #[test]
     fn part_a_input_works() {
-        assert_eq!(run_until_loop(include_str!("my.input")), 1584);
+        assert_eq!(
+            run(include_str!("my.input")),
+            ExitStatus::LoopDetected(1584)
+        );
     }
 }
