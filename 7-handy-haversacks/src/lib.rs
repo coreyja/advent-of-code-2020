@@ -17,13 +17,13 @@ pub fn count_outer_bags(input: &str, bag: &str) -> usize {
             .pop()
             .expect("We check the length before we get in here");
 
-        if let Some(v) = map.get(&curr).cloned() {
+        if let Some(v) = map.get(&curr) {
             v.iter().for_each(|x| {
                 todo.push(x.to_owned());
             });
         }
 
-        visited_bags.insert(curr.to_owned());
+        visited_bags.insert(curr);
     }
 
     // We don't want to include 'bag' but its here so we subtract one
@@ -41,7 +41,7 @@ pub fn count_inner_bags(input: &str, bag: &str) -> usize {
             .pop()
             .expect("We check the length before we get in here");
 
-        if let Some(v) = map.get(&curr).cloned() {
+        if let Some(v) = map.get(&curr) {
             v.iter().for_each(|(count, name)| {
                 std::iter::repeat(name)
                     .take(*count)
