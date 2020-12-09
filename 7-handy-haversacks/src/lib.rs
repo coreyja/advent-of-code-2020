@@ -82,4 +82,12 @@ mod tests {
             4
         );
     }
+
+    #[test]
+    fn part_a_my_input_works() {
+        assert_eq!(
+            count_outer_bags(include_str!("my.input"), "shiny gold"),
+            197
+        );
+    }
 }
